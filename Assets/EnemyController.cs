@@ -92,6 +92,7 @@ public class EnemyController : MonoBehaviour
     //to handle enemy's turn logic
     public void TakeTurn()
     {
+
         switch (currentState)
         {
             case EnemyState.Idle:
@@ -115,6 +116,7 @@ public class EnemyController : MonoBehaviour
                 // Handle death if necessary
                 break;
         } 
+        Debug.Log("Enemy currentState: " + currentState);
     }
 
     void MoveTowardsTargetZ()
@@ -142,6 +144,8 @@ public class EnemyController : MonoBehaviour
     }
     void MoveMeleeEnemyStepByStep()
     {
+        
+        Debug.Log($"Step Count: {meleeStepCount}, Position: {transform.position}");
         // Check if the melee enemy has completed 3 steps
         if (meleeStepCount < 3)
         {
@@ -159,7 +163,7 @@ public class EnemyController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, enemyData.movementSpeed * Time.deltaTime);
 
             meleeStepCount++; // Increment the step count
-
+            Debug.Log($"After Step - Position: {transform.position}");
             // Wait for the next turn to move another step
             ChangeState(EnemyState.Idle);
         }

@@ -11,7 +11,8 @@ public class GameManager : MonoBehaviour
     public int totalWaves = 3;
     public float waveInterval = 5f; //timer start after all enemies are dead in current wave and there are more waves.
     private int currentWave = 0;
-
+    public int minEnemyCountPerWave = 1;
+    public int maxEnemyCountPerWave_Exclusive = 4; 
     public enum GameState
     {
         PlayerTurn,
@@ -33,7 +34,9 @@ public class GameManager : MonoBehaviour
         currentWave = 0;
         StartNextWave();
     }
-
+    private void Update() {
+        Debug.Log("Current State of Game is " + currentState);
+    }
     private void StartNextWave()
     {
         if (currentWave >= totalWaves)
@@ -47,7 +50,7 @@ public class GameManager : MonoBehaviour
         //clear the list of enemies of current/previous wave
         enemies.Clear();
 
-        int enemyCount = Random.Range(1, 4); //spawn b/w 1-3 enemies per wave. change this to public so in editor our team can assign easily.
+        int enemyCount = Random.Range(minEnemyCountPerWave, maxEnemyCountPerWave_Exclusive); //spawn b/w 1-3 enemies per wave. change this to public so in editor our team can assign easily.
         enemySpawner.SpawnEnemies(enemyCount, enemies); // Use EnemySpawner
         //set state to idle until enemies reach initial target z position from spawn point.
         currentState = GameState.Idle;
