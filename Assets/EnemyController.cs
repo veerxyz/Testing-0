@@ -194,6 +194,7 @@ public class EnemyController : MonoBehaviour
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
+            Debug.Log($"{gameObject.name} took fatal damage. Transitioning to Death state.");
             ChangeState(EnemyState.Death); // Switch to Death state when health is 0
         }
         else

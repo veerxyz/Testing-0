@@ -1,3 +1,4 @@
+//git on
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -127,7 +128,11 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            //ensuring next wave is called only when current wave is over and all are defeated.
+            if(AreAllEnemiesDefeated())
+            {
             StartNextWave(); // Proceed to next wave
+            }
         }
     }
     #endregion
