@@ -63,6 +63,7 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerState.Hit:
             AudioManager.ins.PlayPlayerHitSFX();
+            PFXManager.ins.PlayHitPFX(transform.position);
                 TakeHit();
                 break;
             case PlayerState.Death:
@@ -85,11 +86,14 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Shooting Bullet");
             hasShot = true;
+
             // Projectile-based shooting for ricochet
             GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
             Bullet bulletScript = bullet.GetComponent<Bullet>();
             bulletScript.SetTarget(targetEnemy, bulletScript.damage, ricochetChance: 0.2f); // 20% chance to ricochet, and use bullet damage instead of "attackPower" of player
 
+            //PFX for Muzzle
+            PFXManager.ins.PlayMuzzleFlashPFX(gunPoint.position);
             // Rotate player towards the target
             Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
             direction.y = 0;

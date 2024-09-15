@@ -91,6 +91,8 @@ public Animator animator;
             case EnemyState.Hit:
                 // React to being hit (animations, etc.)
                 AudioManager.ins.PlayEnemyHitSFX();
+                //enemy die pfx
+                PFXManager.ins.PlayHitPFX(transform.position);
                 if (currentHealth <= 0)
                 {
                     Debug.Log("Enemy Hit-Death Triggered");
@@ -315,7 +317,10 @@ public Animator animator;
     //this is called when enemy currentState is Death.
     void Die()
     {
+        //audio
         AudioManager.ins.PlayEnemyDeathSFX();
+        //enemy die pfx
+        PFXManager.ins.PlayEnemyDeathPFX(transform.position);
         Debug.Log($"{enemyData.enemyName} has died!");
 
         // Play death animation, particle effects, etc.
