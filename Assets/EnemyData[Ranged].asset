@@ -18,3 +18,4 @@ MonoBehaviour:
   health: 100
   attackPower: 10
   enemyPrefab: {fileID: 5211405336375097215, guid: e2750e38fa49bf8498d68e4506afe4ba, type: 3}
+  spikeBallPrefab: {fileID: 2950448492610787647, guid: 53b348e92963b1f4f8acc91ae5db90b4, type: 3}

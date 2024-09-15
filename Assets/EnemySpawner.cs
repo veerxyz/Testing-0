@@ -51,7 +51,7 @@ private float minDistanceBetweenEnemies = 2.0f; // Adjust this value as needed, 
         {
             float randomX = Random.Range(-5f, 5f);
             float zSpawn = 20f;
-            newPosition = new Vector3(randomX, 1f, zSpawn);
+            newPosition = new Vector3(randomX, 0, zSpawn);
 
             validPosition = true;
             foreach (var position in spawnedPositions)

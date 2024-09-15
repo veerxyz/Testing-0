@@ -11,4 +11,7 @@ public class EnemyData : ScriptableObject
     public int health;
     public int attackPower;
     public GameObject enemyPrefab;
+
+    [Header("Ranged Enemy Weapon")]
+    public GameObject spikeBallPrefab = null; 
 }

@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public Transform gunPoint;
     public int health = 100;
     // public int attackPower = 10; //initially used, but moved to bullet damage, more flexible incase we need to change player bullet or weapon.
-    public Animator animator;
+    public Animator animator = null;
 
     public GameManager gameManager; //reference to GameManager
 
@@ -42,6 +42,10 @@ public class PlayerController : MonoBehaviour
         {
             gameManager = FindObjectOfType<GameManager>();
         }
+         if(animator == null)
+        {
+        animator = gameObject.GetComponent<Animator>();
+        }
     }
 
     private void Update()
@@ -54,6 +58,8 @@ public class PlayerController : MonoBehaviour
                 break;
             case PlayerState.Shoot:
                 Shoot();
+                //player shooting animation here
+                animator.SetTrigger("Shoot");
                 break;
             case PlayerState.Hit:
                 TakeHit();
@@ -92,8 +98,7 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.LookRotation(direction);
             }
 
-            //player shooting animation here
-            animator.SetTrigger("Shoot");
+           
 
         }
 
@@ -116,7 +121,7 @@ public class PlayerController : MonoBehaviour
         //we categorize them and put them in different lists
         foreach (var enemy in gameManager.enemies)
         {
-            
+            //Debug.log("")
             if (enemy.isMelee)
             {
                 if (enemy.currentState != EnemyController.EnemyState.Death)
@@ -155,16 +160,28 @@ public class PlayerController : MonoBehaviour
         return null; // No enemies left
     }
     #endregion
+
+    //call this whenever we take damage from our enemies.
+    public void TakeDamage(int damage)
+    {
+        health -= damage; // Reduce health by the damage amount
+        Debug.Log($"Player took {damage} damage, remaining health: {health}");
+        TakeHit();
+    }
     private void TakeHit()
     {
         Debug.Log("Player is taking hit");
-        // Handle getting hit, reducing health, playing animation
+       
+        // Handle getting hit, reducing health, playing hit animation maybe?
         currentState = health > 0 ? PlayerState.Idle : PlayerState.Death;
+       
     }
 
+    //if player dies
     private void Die()
     {
         // Trigger death animation and end game logic
+        //Player fall / die animation?
         Debug.Log("Player has died, spawn gameover and lost screen");
     }
 }
