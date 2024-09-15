@@ -93,7 +93,7 @@ public class PlayerController : MonoBehaviour
             bulletScript.SetTarget(targetEnemy, bulletScript.damage, ricochetChance: 0.2f); // 20% chance to ricochet, and use bullet damage instead of "attackPower" of player
 
             //PFX for Muzzle
-            PFXManager.ins.PlayMuzzleFlashPFX(gunPoint.position);
+            PFXManager.ins.PlayMuzzleFlashPFX(gunPoint.position, gunPoint.rotation);
             // Rotate player towards the target
             Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
             direction.y = 0;

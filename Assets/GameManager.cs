@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public Button fightButton; //Reference to the Fight Button
     private int enemiesReachedStandby = 0;
 
+    public int coinCount = 0; //resets every new session, ie, no PlayerPrefs used to store long term.
 
     public enum GameState
     {
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
+        //UI
+        UIManager.ins.ShowMainPanel();
         //fight button would come here.
         // StartGame(); //the fight button should invoke this method.
         fightButton.gameObject.SetActive(true);  // Show Fight Button at the start
@@ -52,6 +55,8 @@ public class GameManager : MonoBehaviour
 
     private void StartGame()
     {
+        //UI
+        UIManager.ins.ShowPlayPanel();
         Debug.Log("Game has started");
         currentWave = 0;
         StartNextWave();
@@ -244,6 +249,21 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning($"Enemy {enemy.gameObject.name} was not found in the list.");
         }
     }
+     //we call this method when one enemy dies
+    public void IncrementCoinCount()
+    {
+        coinCount++;
+        UpdateCoinCounterUI();
+    }
+    //can have decrease coin also just in case needed for future.
+     private void UpdateCoinCounterUI()
+    {
+        // Notify UIManager to update the coin count display
+        if (UIManager.ins != null)
+        {
+            UIManager.ins.UpdateCoinCounter(coinCount);
+        }
+    }
     private void EndGame(bool won)
     {
         currentState = won ? GameState.GameWon : GameState.GameOver;
@@ -253,11 +273,14 @@ public class GameManager : MonoBehaviour
             Debug.Log("Player Wins!");
             PlayerController.ins.animator.SetTrigger("Win");
             // Show win panel, end game logic
+            UIManager.ins.ShowGameOverPanel("Player WON!");
         }
         else
         {
             Debug.Log("Player Lost!");
+
             // Show lose panel, end game logic
+            UIManager.ins.ShowGameOverPanel("Player LOST!");
         }
     }
 

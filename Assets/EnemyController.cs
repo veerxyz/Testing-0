@@ -330,6 +330,8 @@ public Animator animator;
         gameObject.SetActive(false);
         if (GameManager.ins != null)
         {
+            UIManager.ins.AnimateCoinToCounter(transform.position);
+            GameManager.ins.IncrementCoinCount(); //we add a coin once enemy dies
             GameManager.ins.OnEnemyDeath(this);//we notify gamemanager about this enemy's death
         }
     }
