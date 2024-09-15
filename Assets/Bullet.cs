@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public float speed = 10f;
+    public float speed = 200f;
     public int damage = 10;
     public float ricochetChance = 0.2f; // 20% chance to ricochet
     public float lifetime = 5f; // Time before the bullet is destroyed
