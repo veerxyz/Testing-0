@@ -153,7 +153,7 @@ public Animator animator;
 
     void MoveTowardsInitialStandbyPosition()
     {
-        float targetZ = 10f; // Where enemies should stop moving
+        float targetZ = 6f; // Where enemies should stop moving
         Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, targetZ);
 
         // Move enemy towards target position
@@ -262,7 +262,7 @@ public Animator animator;
     void OrcMeleeAttack()
     {
     // Calculate distance between enemy and player
-        float attackRange = 2.5f; // Adjust the range based on the enemy's weapon
+        float attackRange = 2.0f; // Adjust the range based on the enemy's weapon
         Vector3 playerPosition = PlayerController.ins.transform.position;
         float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
 
@@ -330,7 +330,7 @@ public Animator animator;
         gameObject.SetActive(false);
         if (GameManager.ins != null)
         {
-            UIManager.ins.AnimateCoinToCounter(transform.position);
+            // UIManager.ins.AnimateCoinToCounter(transform.position);
             GameManager.ins.IncrementCoinCount(); //we add a coin once enemy dies
             GameManager.ins.OnEnemyDeath(this);//we notify gamemanager about this enemy's death
         }
