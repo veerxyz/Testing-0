@@ -116,6 +116,7 @@ public class GameManager : MonoBehaviour
             if (enemy.currentState != EnemyController.EnemyState.Death)
             {
                 enemy.TakeTurn(); // Move or Attack based on enemy type
+                yield return new WaitUntil(()=> enemy.currentState == EnemyController.EnemyState.Idle || enemy.currentState== EnemyController.EnemyState.Death); 
                 yield return new WaitForSeconds(1f); // Delay between enemy turns
             }
         }

@@ -145,7 +145,7 @@ public class EnemyController : MonoBehaviour
     void MoveMeleeEnemyStepByStep()
     {
         
-        Debug.Log($"Step Count: {meleeStepCount}, Position: {transform.position}");
+        Debug.Log($"Step Count: {meleeStepCount}, Before Step Position: {transform.position}");
         // Check if the melee enemy has completed 3 steps
         if (meleeStepCount < 3)
         {
@@ -163,7 +163,7 @@ public class EnemyController : MonoBehaviour
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, enemyData.movementSpeed * Time.deltaTime);
 
             meleeStepCount++; // Increment the step count
-            Debug.Log($"After Step - Position: {transform.position}");
+            Debug.Log($"After Step Position: {transform.position}");
             // Wait for the next turn to move another step
             ChangeState(EnemyState.Idle);
         }
@@ -175,8 +175,15 @@ public class EnemyController : MonoBehaviour
     }
     void LookAtPlayer()
     {
-        Vector3 lookDirection = (FindObjectOfType<PlayerController>().transform.position - transform.position).normalized;
-        transform.rotation = Quaternion.LookRotation(lookDirection);
+        //forgot that it involves whole rotation, we dont want that, just directional change
+        // Vector3 lookDirection = (FindObjectOfType<PlayerController>().transform.position - transform.position).normalized;
+        // transform.rotation = Quaternion.LookRotation(lookDirection); 
+
+         // We Lock y-axis to avoid tilt bug
+    Vector3 playerPosition = FindObjectOfType<PlayerController>().transform.position;
+    Vector3 lookDirection = new Vector3(playerPosition.x, transform.position.y, playerPosition.z) - transform.position;
+    transform.rotation = Quaternion.LookRotation(lookDirection);
+    
     }
     void PerformAttack()
     {

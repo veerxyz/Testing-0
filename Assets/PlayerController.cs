@@ -92,7 +92,11 @@ public class PlayerController : MonoBehaviour
 
             // Rotate player towards the target
             Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
+            direction.y = 0;
+            //rotates only on one plane, ie horizontal, there are other ways to do it also like i did in enemy, but just doing this one here so no tilt.
+            if(direction!=Vector3.zero){
             transform.rotation = Quaternion.LookRotation(direction);
+            }
         }
 
         currentState = PlayerState.Idle; // Go back to idle after shooting
