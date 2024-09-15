@@ -92,30 +92,29 @@ public class EnemyController : MonoBehaviour
     //to handle enemy's turn logic
     public void TakeTurn()
     {
+        if (currentState == EnemyState.Death) return;
 
-        switch (currentState)
+    if (isMelee)
+    {
+        // Melee enemy: Move or attack based on step count
+        if (meleeStepCount < 3)
         {
-            case EnemyState.Idle:
-                // Optionally handle Idle state during enemy's turn
-                break;
-
-            case EnemyState.Move:
-                MoveTowardsTargetZ();
-                break;
-
-            case EnemyState.Attack:
-                PerformAttack();
-                ChangeState(EnemyState.Idle); // Reset after attack
-                break;
-
-            case EnemyState.Hit:
-                // Handle being hit if necessary
-                break;
-
-            case EnemyState.Death:
-                // Handle death if necessary
-                break;
-        } 
+            MoveMeleeEnemyStepByStep();
+        }
+        else
+        {
+            // yo attack after 3 steps
+            ChangeState(EnemyState.Attack);
+            PerformAttack();
+        }
+    }
+    else
+    {
+        // Ranged enemy: Attack from standby position
+        ChangeState(EnemyState.Attack);
+        PerformAttack();
+    }
+       
         Debug.Log("Enemy currentState: " + currentState);
     }
 
@@ -130,16 +129,11 @@ public class EnemyController : MonoBehaviour
         // Check if the enemy has reached the initial Z=10 position
         if (transform.position.z <= targetZ)
         {
-            if (enemyData.isMelee)
-            {
-                // If it's a melee enemy, move step-by-step towards the player
-                MoveMeleeEnemyStepByStep();
-            }
-            else
-            {
-                // Ranged enemies attack immediately after reaching Z=10
-                ChangeState(EnemyState.Attack);
-            }
+           // All enemies move to Idle after reaching the standby position
+        ChangeState(EnemyState.Idle);
+        
+        // Notify GameManager that this enemy has reached standby, gonna use instance, remove all FindObject on Gamemanager since there is only one GameManager
+        FindObjectOfType<GameManager>().OnEnemyReachedStandby(this);
         }
     }
     void MoveMeleeEnemyStepByStep()

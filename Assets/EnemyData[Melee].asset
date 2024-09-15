@@ -17,4 +17,4 @@ MonoBehaviour:
   movementSpeed: 10
   health: 100
   attackPower: 10
-  enemyPrefab: {fileID: 2068332930856190810, guid: b4d4f9be5565f1240b2ca6c38a954205, type: 3}
+  enemyPrefab: {fileID: 6002338060374469293, guid: 3bb483fe2d409864b8b0ac29e1d715f7, type: 3}
