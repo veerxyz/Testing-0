@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public Button fightButton; //Reference to the Fight Button
     private int enemiesReachedStandby = 0;
 
+
     public enum GameState
     {
         PlayerTurn,

@@ -14,6 +14,7 @@ public enum PlayerState
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController ins;
     public PlayerState currentState;
     public GameObject bulletPrefab; //assign in editor
     public Transform gunPoint;
@@ -22,6 +23,15 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
 
     public GameManager gameManager; //reference to GameManager
+    
+    private void Awake() {
+    
+        if (ins == null)
+        {
+            ins = this;
+        }
+    
+    }
     private void Start()
     {
         currentState = PlayerState.Idle;

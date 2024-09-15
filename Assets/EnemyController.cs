@@ -14,7 +14,8 @@ public class EnemyController : MonoBehaviour
     
     public int currentHealth;
     
-
+    //adding a flag to avoid running MoveTowardsStandbyPosition
+    private bool hasReachedStandbyPosition = false;
     public enum EnemyState
     {
         Idle,
@@ -54,7 +55,17 @@ public class EnemyController : MonoBehaviour
             case EnemyState.Move:
                 //moves all type of enemies, and later once they reach
                 //their attack position, proceed according to their nature of movement.
+                if(!hasReachedStandbyPosition){
                 MoveTowardsInitialStandbyPosition(); //or previously i named it MoveTowardsTargetZ, this only happens once when spawned
+                }
+                else //it has reached the standby point
+                {   
+                    //if its melee, we move it as per melee logic
+                    if(isMelee)
+                    {
+                    MoveMeleeEnemyStepByStep();
+                    }
+                }
                 break;
 
             case EnemyState.Attack:
@@ -101,6 +112,7 @@ public class EnemyController : MonoBehaviour
         // Melee enemy: Move or attack based on step count
         if (meleeStepCount < 3)
         {
+            ChangeState(EnemyState.Move);
             MoveMeleeEnemyStepByStep();
         }
         else
@@ -131,6 +143,7 @@ public class EnemyController : MonoBehaviour
         // Check if the enemy has reached the initial Z=10 position
         if (transform.position.z <= targetZ)
         {
+            hasReachedStandbyPosition=true;
            // All enemies move to Idle after reaching the standby position
         ChangeState(EnemyState.Idle);
         
@@ -138,37 +151,63 @@ public class EnemyController : MonoBehaviour
         // GameManager.ins.OnEnemyReachedStandby(this);
         }
     }
-    void MoveMeleeEnemyStepByStep()
+void MoveMeleeEnemyStepByStep()
+{
+    Debug.Log($"Step Count: {meleeStepCount}, Before Step Position: {transform.position}");
+
+    // Check if the melee enemy has completed 3 steps
+    if (meleeStepCount < 3)
     {
-        
-        Debug.Log($"Step Count: {meleeStepCount}, Before Step Position: {transform.position}");
-        // Check if the melee enemy has completed 3 steps
-        if (meleeStepCount < 3)
+        // Calculate player position and keep the y position locked
+        Vector3 playerPosition = PlayerController.ins.transform.position;
+        playerPosition.y = transform.position.y;  // Keep the y-axis constant
+
+        // Calculate the distance between the enemy and the player
+        float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
+
+        // Define a stopping distance to avoid overlap (adjust this value as needed)
+        float stoppingDistance = 1.5f;
+
+        // Check if the enemy is within stopping distance
+        if (distanceToPlayer > stoppingDistance)
         {
-            // Calculate distance between melee enemy and player
-            Vector3 playerPosition = FindObjectOfType<PlayerController>().transform.position;
-            float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
+            // Calculate the number of remaining steps (including the current step)
+            int remainingSteps = 3 - meleeStepCount;
 
-            // Divide the total distance by 3 to get the distance for each step
-            float stepDistance = distanceToPlayer / (3 - meleeStepCount);  // Remaining steps
+            // Calculate the step distance: total distance to the player / (remaining steps + 1)
+            float stepDistance = (distanceToPlayer - stoppingDistance) / (remainingSteps + 1);
 
-            // Target position for the next step
-            Vector3 targetPosition = Vector3.MoveTowards(transform.position, playerPosition, stepDistance);
+            // Calculate direction towards the player
+            Vector3 directionToPlayer = (playerPosition - transform.position).normalized;
+
+            // Calculate the target position for this step
+            Vector3 targetPosition = transform.position + directionToPlayer * stepDistance;
 
             // Move melee enemy one step closer to the player
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, enemyData.movementSpeed * Time.deltaTime);
 
-            meleeStepCount++; // Increment the step count
-            Debug.Log($"After Step Position: {transform.position}");
-            // Wait for the next turn to move another step
-            ChangeState(EnemyState.Idle);
+            // Check if the enemy has reached the target position for this step
+            if (transform.position == targetPosition)
+            {
+                Debug.Log($"After Step Position: {transform.position}");
+                meleeStepCount++; // Increment the step count
+                ChangeState(EnemyState.Idle); // Change to Idle after reaching one step
+            }
         }
         else
         {
-            // After completing 3 steps, we attack the player
-            ChangeState(EnemyState.Attack);
+            // If the enemy is within the stopping distance, stop moving and go idle
+            Debug.Log("Enemy is within stopping distance.");
+            ChangeState(EnemyState.Idle);
         }
     }
+    else
+    {
+        // After completing 3 steps, we attack the player
+        ChangeState(EnemyState.Attack);
+    }
+}
+
     void LookAtPlayer()
     {
         //forgot that it involves whole rotation, we dont want that, just directional change
@@ -225,5 +264,6 @@ public class EnemyController : MonoBehaviour
             GameManager.ins.OnEnemyDeath(this);//we notify gamemanager about this enemy's death
         }
     }
+    
 
 }
