@@ -359,7 +359,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyTypes:
   - {fileID: 11400000, guid: ed73ca31b381d8a428562326bda2caa8, type: 2}
-  - {fileID: 11400000, guid: 8db178b004cb36444add78df97773c74, type: 2}
 --- !u!1 &383314950
 GameObject:
   m_ObjectHideFlags: 0
@@ -1168,7 +1167,7 @@ MonoBehaviour:
   player: {fileID: 866035250}
   enemySpawner: {fileID: 333471730}
   enemies: []
-  totalWaves: 1
+  totalWaves: 2
   waveInterval: 2
   minEnemyCountPerWave: 2
   maxEnemyCountPerWave_Exclusive: 4

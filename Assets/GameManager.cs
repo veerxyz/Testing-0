@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class GameManager : MonoBehaviour
 {
+    public static GameManager ins; // since we have one gamemanager in whole game, we use it as singleton
     public PlayerController player;
     public EnemySpawner enemySpawner;
     public List<EnemyController> enemies = new List<EnemyController>(); //Store list of enemies spawned per wave
@@ -25,6 +27,15 @@ public class GameManager : MonoBehaviour
         GameWon
     }
     public GameState currentState = GameState.Idle;
+
+    private void Awake() {
+    
+        if (ins == null)
+        {
+            ins = this;
+        }
+    
+    }
     private void Start()
     {
         //fight button would come here.
@@ -58,6 +69,14 @@ public class GameManager : MonoBehaviour
         Debug.Log("Starting Wave " + (currentWave + 1));
         currentWave++;
 
+        // to destroy all the GameObjects(enemies) since we disabled them in Die() instead of destroying it to simplify list modifications and reads.
+        foreach (EnemyController enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                Destroy(enemy.gameObject);
+            }
+        }
         //clear the list of enemies of current/previous wave
         enemies.Clear();
         enemiesReachedStandby = 0;
@@ -71,16 +90,19 @@ public class GameManager : MonoBehaviour
 
         Invoke(nameof(CheckEnemiesReachedTarget), waveInterval);
     }
-    public void OnEnemyReachedStandby(EnemyController enemy)
-    {
-        enemiesReachedStandby++;
+    
+    //this checks individually, and is called from enemycontroller>MoveTowardsTargetZ
+    // public void OnEnemyReachedStandby(EnemyController enemy)
+    // {
+    //     enemiesReachedStandby++;
 
-        // Check if all enemies have reached their standby positions
-        if (enemiesReachedStandby == enemies.Count)
-        {
-            StartPlayerTurn();
-        }
-    }
+    //     // Check if all enemies have reached their standby positions
+    //     if (enemiesReachedStandby == enemies.Count)
+    //     {
+    //         StartPlayerTurn();
+    //     }
+    // }
+    //checks all at once
     private void CheckEnemiesReachedTarget()
     {
         bool allEnemiesReady = true;
@@ -135,26 +157,13 @@ public class GameManager : MonoBehaviour
     }
     private IEnumerator EnemyTurnRoutine()
     {
-        //this will give us issues if we have to change list inbetween enumaration, so gonna go the usual "create a copy" route
-        // foreach (EnemyController enemy in enemies)
-        // {
-        //     if (enemy.currentState != EnemyController.EnemyState.Death)
-        //     {
-        //         enemy.TakeTurn(); // Move or Attack based on enemy type
-
-        //         //you can use this to check if enemy state is idle or death to move to next enemy
-        //         // yield return new WaitUntil(()=> enemy.currentState == EnemyController.EnemyState.Idle || enemy.currentState== EnemyController.EnemyState.Death); 
-
-        //         yield return new WaitForSeconds(1f); // Delay between enemy turns
-        //     }
-        // }
-
-        // So we use this implementation of creating a copy of that list, like a snapshotCreate a copy of the enemies list to safely iterate through it;
+    
+        //we use this implementation of creating a copy of that list, like a snapshotCreate a copy of the enemies list to safely iterate/modify through it;
         List<EnemyController> enemiesCopy = new List<EnemyController>(enemies);
 
         foreach (EnemyController enemy in enemiesCopy)
         {
-            if (enemy.currentState != EnemyController.EnemyState.Death)
+            if (enemy != null && enemy.currentState != EnemyController.EnemyState.Death)
             {
                 enemy.TakeTurn(); // Move or Attack based on enemy type
                 yield return new WaitForSeconds(1f); // Delay between enemy turns
@@ -163,9 +172,11 @@ public class GameManager : MonoBehaviour
         CheckGameStatus(); //after enemy turn is complete, we check if the player has lost or not, or to move to next.
     }
     #endregion
+    
 
     private void CheckGameStatus()
     {
+
         // After all enemies take their turn, check if player is still alive and if we need to spawn next wave
         if (player.health <= 0)
         {
@@ -185,18 +196,37 @@ public class GameManager : MonoBehaviour
             StartPlayerTurn();
         }
     }
+
     private bool AreAllEnemiesDefeated()
     {
         // Check if there are no more enemies alive in the list 'enemies' since even if they die they are not removed from the list, which i clear manually in next wave.
-
+         
         foreach (EnemyController enemy in enemies)
         {
-            if (enemy.currentState != EnemyController.EnemyState.Death)
+            if (enemy !=null && enemy.currentState != EnemyController.EnemyState.Death)
             {
+                Debug.Log("AREALLENEMIESDEFEATED? enemy state is" + enemy.currentState );
                 return false; // If any enemy is not in Death state, return false
             }
         }
+        Debug.Log("AREALLENEMIESDEFEATED? all enemies are defeated");
         return true; // All enemies are defeated if the loop completes
+    }
+    public void OnEnemyDeath(EnemyController enemy)
+    {
+        if (enemy != null)
+        {
+           //mark the enemy dead, just double check, but dont remove from the list.
+           enemy.currentState = EnemyController.EnemyState.Death;
+        Debug.Log($"Enemy {enemy.gameObject.name} is dead.");
+            
+            // Destroy(enemy.gameObject, 1); //we can destroy the enemy if it's no longer needed
+          
+        }
+         else
+        {
+            Debug.LogWarning($"Enemy {enemy.gameObject.name} was not found in the list.");
+        }
     }
     private void EndGame(bool won)
     {

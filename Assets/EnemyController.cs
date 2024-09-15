@@ -54,7 +54,7 @@ public class EnemyController : MonoBehaviour
             case EnemyState.Move:
                 //moves all type of enemies, and later once they reach
                 //their attack position, proceed according to their nature of movement.
-                MoveTowardsTargetZ();
+                MoveTowardsInitialStandbyPosition(); //or previously i named it MoveTowardsTargetZ, this only happens once when spawned
                 break;
 
             case EnemyState.Attack:
@@ -66,10 +66,12 @@ public class EnemyController : MonoBehaviour
                 // React to being hit (animations, etc.)
                 if (currentHealth <= 0)
                 {
+                    Debug.Log("Enemy Hit-Death Triggered");
                     ChangeState(EnemyState.Death);
                 }
                 else
                 {
+                    Debug.Log("Enemy Hit-Idle Triggered");
                     ChangeState(EnemyState.Idle);
                 }
                 break;
@@ -118,7 +120,7 @@ public class EnemyController : MonoBehaviour
         Debug.Log("Enemy currentState: " + currentState);
     }
 
-    void MoveTowardsTargetZ()
+    void MoveTowardsInitialStandbyPosition()
     {
         float targetZ = 10f; // Where enemies should stop moving
         Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, targetZ);
@@ -133,7 +135,7 @@ public class EnemyController : MonoBehaviour
         ChangeState(EnemyState.Idle);
         
         // Notify GameManager that this enemy has reached standby, gonna use instance, remove all FindObject on Gamemanager since there is only one GameManager
-        FindObjectOfType<GameManager>().OnEnemyReachedStandby(this);
+        // GameManager.ins.OnEnemyReachedStandby(this);
         }
     }
     void MoveMeleeEnemyStepByStep()
@@ -208,11 +210,20 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    //this is called when enemy currentState is Death.
     void Die()
     {
         Debug.Log($"{enemyData.enemyName} has died!");
+        
         // Play death animation, particle effects, etc.
-        Destroy(gameObject);
+       //instead of destroying the gameobject her, destroy in gamemanager once wave round is completed
+       //and just setfalse here
+        // Destroy(gameObject);
+        gameObject.SetActive(false);
+        if(GameManager.ins != null)
+        {
+            GameManager.ins.OnEnemyDeath(this);//we notify gamemanager about this enemy's death
+        }
     }
 
 }

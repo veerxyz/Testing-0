@@ -77,8 +77,8 @@ public class Bullet : MonoBehaviour
     private EnemyController FindNewTarget()
     {
         // Find all enemies except the current target
-        List<EnemyController> enemies = FindObjectOfType<GameManager>().enemies; //using GameManager instance would be preferred instead of finding object but just just one gamemanager so typing it as it flows for now.
-        enemies.Remove(currentTarget);
+        List<EnemyController> enemies = GameManager.ins.enemies; //using GameManager instance would be preferred instead of finding object but just just one gamemanager so typing it as it flows for now.
+        // enemies.Remove(currentTarget);
 
         if (enemies.Count > 0)
         {
