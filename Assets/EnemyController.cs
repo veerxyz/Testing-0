@@ -166,7 +166,7 @@ void MoveMeleeEnemyStepByStep()
         float distanceToPlayer = Vector3.Distance(transform.position, playerPosition);
 
         // Define a stopping distance to avoid overlap (adjust this value as needed)
-        float stoppingDistance = 1.5f;
+        float stoppingDistance = 5f;
 
         // Check if the enemy is within stopping distance
         if (distanceToPlayer > stoppingDistance)

@@ -23,14 +23,16 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
 
     public GameManager gameManager; //reference to GameManager
-    
-    private void Awake() {
-    
+
+    private bool hasShot = false; //to avoid shooting spam, and only shoot once, per player turn.
+    private void Awake()
+    {
+
         if (ins == null)
         {
             ins = this;
         }
-    
+
     }
     private void Start()
     {
@@ -48,6 +50,7 @@ public class PlayerController : MonoBehaviour
         {
             case PlayerState.Idle:
                 // Waiting for the fight to start
+                hasShot = false; //resets bool to allow shooting again.
                 break;
             case PlayerState.Shoot:
                 Shoot();
@@ -63,38 +66,18 @@ public class PlayerController : MonoBehaviour
     #region Player Attack -> Shoot Logic along with selection of its enemy target
     private void Shoot()
     {
-        // non hitscan/projectile shoot
-        // Instantiate bullet
-        // GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
-        // Bullet logic would go here
-
-        // //hitscan style shoot using Raycast
-        // Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        // if (Physics.Raycast(ray, out RaycastHit hit))
-        // {
-        //     if (hit.collider.CompareTag("Enemy"))
-        //     {
-        //         EnemyController enemy = hit.collider.GetComponent<EnemyController>();
-        //         if (enemy != null)
-        //         {
-        //             //if you dont want player to rotate towards enemy before shooting, comment the below 2 statements.
-        //             // Rotate player to face the enemy
-        //             Vector3 direction = (enemy.transform.position - transform.position).normalized;
-        //             transform.rotation = Quaternion.LookRotation(direction);
-
-        //             Debug.Log("Player attacks enemy");
-        //             // Apply damage to enemy
-        //             enemy.TakeDamage(attackPower);
-        //         }
-        //     }
-        // }
-
+        if (hasShot)
+        {
+            return;
+        }
         //projectile style since ricochet
         // Select the best target according to the target selection logic
         EnemyController targetEnemy = SelectTarget();
 
         if (targetEnemy != null)
         {
+            Debug.Log("Shooting Bullet");
+            hasShot = true;
             // Projectile-based shooting for ricochet
             GameObject bullet = Instantiate(bulletPrefab, gunPoint.position, Quaternion.identity);
             Bullet bulletScript = bullet.GetComponent<Bullet>();
@@ -104,11 +87,18 @@ public class PlayerController : MonoBehaviour
             Vector3 direction = (targetEnemy.transform.position - transform.position).normalized;
             direction.y = 0;
             //rotates only on one plane, ie horizontal, there are other ways to do it also like i did in enemy, but just doing this one here so no tilt.
-            if(direction!=Vector3.zero){
-            transform.rotation = Quaternion.LookRotation(direction);
+            if (direction != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(direction);
             }
+
+            //player shooting animation here
+            animator.SetTrigger("Shoot");
+
         }
 
+
+        hasShot = true;
         currentState = PlayerState.Idle; // Go back to idle after shooting
         // Notify GameManager that the player's attack is complete
         if (gameManager != null)
@@ -125,41 +115,42 @@ public class PlayerController : MonoBehaviour
 
         //we categorize them and put them in different lists
         foreach (var enemy in gameManager.enemies)
-    {
-        if (enemy.isMelee)
         {
-            if (enemy.currentState != EnemyController.EnemyState.Death)
+            
+            if (enemy.isMelee)
             {
-                meleeEnemies.Add(enemy);
-                // Check if the melee enemy is ready to attack (completed 3 steps)
-                if (enemy.currentState == EnemyController.EnemyState.Idle && enemy.meleeStepCount >= 3)
+                if (enemy.currentState != EnemyController.EnemyState.Death)
                 {
-                    readyToAttackMeleeEnemies.Add(enemy);
+                    meleeEnemies.Add(enemy);
+                    // Check if the melee enemy is ready to attack (completed 3 steps)
+                    if (enemy.currentState == EnemyController.EnemyState.Idle && enemy.meleeStepCount >= 3)
+                    {
+                        readyToAttackMeleeEnemies.Add(enemy);
+                    }
                 }
             }
+            else if (enemy.currentState != EnemyController.EnemyState.Death)
+            {
+                rangedEnemies.Add(enemy);
+            }
         }
-        else if (enemy.currentState != EnemyController.EnemyState.Death)
-        {
-            rangedEnemies.Add(enemy);
-        }
-    }
 
         // Target selection logic
-         // Check if there are any ranged enemies
-    if (rangedEnemies.Count > 0)
-    {
-        return rangedEnemies.OrderBy(e => e.currentHealth).First();
-    }
-    // Check if there are melee enemies who are ready to attack and also if there are ranged enemies left
-    else if (readyToAttackMeleeEnemies.Count > 0 && rangedEnemies.Count > 0)
-    {
-        return readyToAttackMeleeEnemies.OrderBy(e => e.currentHealth).First();
-    }
-    // Check if there are only melee enemies
-    else if (meleeEnemies.Count > 0)
-    {
-        return meleeEnemies.OrderBy(e => e.currentHealth).ThenBy(e => Vector3.Distance(transform.position, e.transform.position)).First();
-    }
+        // Check if there are any ranged enemies
+        if (rangedEnemies.Count > 0)
+        {
+            return rangedEnemies.OrderBy(e => e.currentHealth).First();
+        }
+        // Check if there are melee enemies who are ready to attack and also if there are ranged enemies left
+        else if (readyToAttackMeleeEnemies.Count > 0 && rangedEnemies.Count > 0)
+        {
+            return readyToAttackMeleeEnemies.OrderBy(e => e.currentHealth).First();
+        }
+        // Check if there are only melee enemies
+        else if (meleeEnemies.Count > 0)
+        {
+            return meleeEnemies.OrderBy(e => e.currentHealth).ThenBy(e => Vector3.Distance(transform.position, e.transform.position)).First();
+        }
         //add an else case here if team wants more but first check with above conditions
         return null; // No enemies left
     }

@@ -164,11 +164,13 @@ public class GameManager : MonoBehaviour
 
         foreach (EnemyController enemy in enemiesCopy)
         {
+            
             if (enemy != null && enemy.currentState != EnemyController.EnemyState.Death)
             {
                 enemy.TakeTurn(); // Move or Attack based on enemy type
                 yield return new WaitForSeconds(1f); // Delay between enemy turns
             }
+          
         }
         CheckGameStatus(); //after enemy turn is complete, we check if the player has lost or not, or to move to next.
     }
