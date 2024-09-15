@@ -90,6 +90,7 @@ public Animator animator;
 
             case EnemyState.Hit:
                 // React to being hit (animations, etc.)
+                AudioManager.ins.PlayEnemyHitSFX();
                 if (currentHealth <= 0)
                 {
                     Debug.Log("Enemy Hit-Death Triggered");
@@ -282,6 +283,7 @@ public Animator animator;
     }
     void ThrowSpikeBall()
     {
+
           GameObject spikeBallPrefab = enemyData.spikeBallPrefab; // reference to the EnemyData ScriptableObject and extracting from there
         // Instantiate the spike ball
         GameObject spikeBall = Instantiate(spikeBallPrefab, spikeBallSpawnPoint.position, Quaternion.identity);
@@ -290,6 +292,7 @@ public Animator animator;
         SpikeBall spikeBallScript = spikeBall.GetComponent<SpikeBall>();
         if (spikeBallScript != null)
         {
+            AudioManager.ins.PlaySpikeBallThrowSFX();
             spikeBallScript.Initialize(PlayerController.ins.transform.position, spikeBallSpawnPoint.position); // Pass the player's position to the spike ball for targeting and also the spawn point of the spike ball
             animator.SetTrigger("Attack");
         }
@@ -312,6 +315,7 @@ public Animator animator;
     //this is called when enemy currentState is Death.
     void Die()
     {
+        AudioManager.ins.PlayEnemyDeathSFX();
         Debug.Log($"{enemyData.enemyName} has died!");
 
         // Play death animation, particle effects, etc.

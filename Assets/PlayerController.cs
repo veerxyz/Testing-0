@@ -62,6 +62,7 @@ public class PlayerController : MonoBehaviour
                 animator.SetTrigger("Shoot");
                 break;
             case PlayerState.Hit:
+            AudioManager.ins.PlayPlayerHitSFX();
                 TakeHit();
                 break;
             case PlayerState.Death:
