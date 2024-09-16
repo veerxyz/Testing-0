@@ -18,7 +18,9 @@ public class PlayerController : MonoBehaviour
     public PlayerState currentState;
     public GameObject bulletPrefab; //assign in editor
     public Transform gunPoint;
-    public int health = 100;
+    public int health = 100; // current health of player
+    private int maxHealth; // health at game start
+    [SerializeField] private HealthBar healthBar; 
     // public int attackPower = 10; //initially used, but moved to bullet damage, more flexible incase we need to change player bullet or weapon.
     public Animator animator = null;
 
@@ -46,6 +48,10 @@ public class PlayerController : MonoBehaviour
         {
         animator = gameObject.GetComponent<Animator>();
         }
+       
+       //Health UI
+       maxHealth = health;
+       healthBar.UpdateHealthBar(health, maxHealth);
     }
 
     private void Update()
@@ -171,12 +177,14 @@ public class PlayerController : MonoBehaviour
     {
         health -= damage; // Reduce health by the damage amount
         Debug.Log($"Player took {damage} damage, remaining health: {health}");
+       
         TakeHit();
     }
     private void TakeHit()
     {
         Debug.Log("Player is taking hit");
-       
+        //Health drops, show in UI
+        healthBar.UpdateHealthBar(health, maxHealth);
         // Handle getting hit, reducing health, playing hit animation maybe?
         currentState = health > 0 ? PlayerState.Idle : PlayerState.Death;
        

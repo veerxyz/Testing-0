@@ -13,7 +13,8 @@ public class EnemyController : MonoBehaviour
 
 
     public int currentHealth;
-
+    private int maxHealth; // health at game start
+    [SerializeField] private HealthBar healthBar; 
     //adding a flag to avoid running MoveTowardsStandbyPosition
     private bool hasReachedStandbyPosition = false;
     public enum EnemyState
@@ -46,6 +47,10 @@ public Animator animator;
         }
         //commented below line coz now I control initial enemy state in EnemySpawner
         // currentState = EnemyState.Idle; // Start in Idle state
+
+         //Health UI
+       maxHealth = currentHealth;
+       healthBar.UpdateHealthBar(currentHealth, maxHealth);
     }
 
     void Update()
@@ -91,7 +96,7 @@ public Animator animator;
             case EnemyState.Hit:
                 // React to being hit (animations, etc.)
                 AudioManager.ins.PlayEnemyHitSFX();
-                //enemy die pfx
+                //enemy hit pfx
                 PFXManager.ins.PlayHitPFX(transform.position);
                 if (currentHealth <= 0)
                 {
@@ -303,6 +308,8 @@ public Animator animator;
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+         
+       healthBar.UpdateHealthBar(currentHealth, maxHealth);
         if (currentHealth <= 0)
         {
             Debug.Log($"{gameObject.name} took fatal damage. Transitioning to Death state.");
