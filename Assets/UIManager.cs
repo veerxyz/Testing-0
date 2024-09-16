@@ -59,7 +59,7 @@ public class UIManager : MonoBehaviour
         if (coinCounterText != null)
         {
             coinCounterText.text = coinCount.ToString();
-
+            AudioManager.ins.PlayCoinCollectSFX();
             //tween shake effect.
             ShakeCoinCounter();
         }
