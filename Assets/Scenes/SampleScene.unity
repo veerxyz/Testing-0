@@ -2131,9 +2131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a77a63fd183c3754dbdc40dae7c6b32f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyHitEffect: {fileID: 19884698, guid: da01c939193394797a883915f8a52959, type: 3}
-  enemyDeathEffect: {fileID: 19819134, guid: 7439d1793882848b39edd857e03eba17, type: 3}
-  muzzleFlashEffect: {fileID: 19879398, guid: ecec4ba5c097946e08bb901fcb114e9c, type: 3}
+  enemyHitEffect: {fileID: 19801442, guid: 834c99069a124aa439d5795c3579843b, type: 3}
+  enemyDeathEffect: {fileID: 19886758, guid: 8c27aeead6d968e4ba986702d6b84335, type: 3}
+  muzzleFlashEffect: {fileID: 19800000, guid: ab1112643ee572748b01dede71158272, type: 3}
 --- !u!1 &1344185804
 GameObject:
   m_ObjectHideFlags: 0
@@ -2516,13 +2516,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96f836365a135a946aa1a712d191f863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showDebugPanel: 1
   player: {fileID: 866035250}
   enemySpawner: {fileID: 333471730}
   enemies: []
   minEnemyCountPerWave: 2
   maxEnemyCountPerWave_Exclusive: 4
   fightButton: {fileID: 2044728578}
-  showDebugPanel: 1
   coinCount: 0
   currentState: 2
 --- !u!1 &1701050606
