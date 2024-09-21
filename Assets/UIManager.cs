@@ -16,8 +16,12 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI coinCounterText;
     public TextMeshProUGUI gameStateText;
     public RectTransform coinPrefab;
-    public RectTransform canvasRectTransform; //so we can make coin prefab child of this on instantiate, assign this in inspector.
-    private RectTransform coinCounterRectTransform;
+    public Canvas canvas; //so we can make coin prefab child of this on instantiate, assign this in inspector.
+    private RectTransform canvasRectTransform;
+    public RectTransform coinCounterRectTransform;
+    public GameObject testCubePrefab;
+
+    public Camera mainCam;
     private void Awake()
     {
         if (ins == null)
@@ -28,8 +32,13 @@ public class UIManager : MonoBehaviour
     void Start()
     {
         // ShowMainPanel(); // Show MainPanel on start, control from gamemanager
-        coinCounterRectTransform = coinCounterText.GetComponent<RectTransform>(); // we get RectTransform of coin counter
-   
+        // coinCounterRectTransform = coinCounterText.GetComponent<RectTransform>(); // we get RectTransform of coin counter for coin end anim
+
+        mainCam = Camera.main;
+        if (canvas != null)
+        {
+            canvasRectTransform = canvas.GetComponent<RectTransform>();
+        }
     }
     public void ShowDebugPanel()
     {
@@ -83,7 +92,41 @@ public class UIManager : MonoBehaviour
             coinCounterText.transform.DOShakePosition(0.5f, 10f, 10, 90, false, true);
         }
     }
-    // now to animate coin from enemy position to coin counter..
+
+    // Call this function from EnemyController.cs when an enemy dies
+    public void SpawnCoinAtEnemyPosition(Vector3 enemyWorldPosition)
+    {
+        //instantiate the coin at the canvas (initially at an arbitrary position)
+        GameObject coin = Instantiate(coinPrefab.gameObject, canvasRectTransform);
+        RectTransform coinRectTransform = coin.GetComponent<RectTransform>();
+
+        //convert the enemy world position to screen space
+        Vector2 screenPos = mainCam.WorldToScreenPoint(enemyWorldPosition);
+        // GameObject testCubePrefabclone = Instantiate(testCubePrefab, new Vector3(screenPos.x, screenPos.y, 0), Quaternion.identity);
+
+        //convert screen position to canvas space (anchored position)
+        Vector2 anchoredPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRectTransform, screenPos, canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : mainCam, out anchoredPos);
+
+        //set the coin's anchored position to the calculated canvas space position
+        coinRectTransform.anchoredPosition = anchoredPos;
+
+        //animate the coin to the coin counter position using DOTween
+        coinRectTransform.DOMove(coinCounterRectTransform.position, 1f).SetEase(Ease.InOutQuad).OnComplete(() =>
+        {
+            // After animation completes, destroy the coin object
+            Destroy(coin);
+            ShakeCoinAtEndOfCoinWorldToCanvasAnim();
+        });
+    }
+    private void ShakeCoinAtEndOfCoinWorldToCanvasAnim()
+    {
+        if (coinCounterRectTransform != null)
+        {
+            // Shake effect
+            coinCounterRectTransform.DOShakePosition(0.5f, 10f, 10, 90, false, true);
+        }
+    }
 
 
 }

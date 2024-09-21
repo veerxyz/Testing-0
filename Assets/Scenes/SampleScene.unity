@@ -175,8 +175,11 @@ MonoBehaviour:
   gameoverText: {fileID: 1014621330}
   coinCounterText: {fileID: 1541896894}
   gameStateText: {fileID: 122385519}
-  coinPrefab: {fileID: 4576515074597522707, guid: cf4eebd8bef11204cb250a44668a238e, type: 3}
-  canvasRectTransform: {fileID: 1701050607}
+  coinPrefab: {fileID: 6973705339226020778, guid: 3d024918d29b04d458f6fc7fe488c9d2, type: 3}
+  canvas: {fileID: 1701050610}
+  coinCounterRectTransform: {fileID: 250742202}
+  testCubePrefab: {fileID: 4679214543030759127, guid: 94664a123528d8242b9b0e3b340ec354, type: 3}
+  mainCam: {fileID: 0}
 --- !u!1 &105202277
 GameObject:
   m_ObjectHideFlags: 0
@@ -972,7 +975,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &493912515
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2596,12 +2599,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1125, y: 2436}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96

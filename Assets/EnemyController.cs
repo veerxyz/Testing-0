@@ -336,6 +336,10 @@ public Animator animator;
         AudioManager.ins.PlayEnemyDeathSFX();
         //enemy die pfx
         PFXManager.ins.PlayEnemyDeathPFX(transform.position);
+        //coin anim pfx
+        //UI Calling AnimateCoin and passing the enemy's position in world space
+        // UIManager.ins.AnimateCoin(transform.position);
+        UIManager.ins.SpawnCoinAtEnemyPosition(transform.position);
         Debug.Log($"{enemyData.enemyName} has died!");
 
         // Play death animation, particle effects, etc.
