@@ -10,9 +10,11 @@ public class UIManager : MonoBehaviour
     public GameObject mainPanel;
     public GameObject playPanel;
     public GameObject gameoverPanel;
+
+    public GameObject debugPanel;
     public TextMeshProUGUI gameoverText;
     public TextMeshProUGUI coinCounterText;
-
+    public TextMeshProUGUI gameStateText;
     public RectTransform coinPrefab;
     public RectTransform canvasRectTransform; //so we can make coin prefab child of this on instantiate, assign this in inspector.
     private RectTransform coinCounterRectTransform;
@@ -27,8 +29,16 @@ public class UIManager : MonoBehaviour
     {
         // ShowMainPanel(); // Show MainPanel on start, control from gamemanager
         coinCounterRectTransform = coinCounterText.GetComponent<RectTransform>(); // we get RectTransform of coin counter
+   
     }
-
+    public void ShowDebugPanel()
+    {
+        debugPanel.SetActive(true);
+    }
+    public void HideDebugPanel()
+    {
+        debugPanel.SetActive(false);
+    }
     public void ShowMainPanel()
     {
         mainPanel.SetActive(true);

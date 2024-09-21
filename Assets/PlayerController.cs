@@ -115,14 +115,23 @@ public class PlayerController : MonoBehaviour
 
 
         hasShot = true;
-        currentState = PlayerState.Idle; // Go back to idle after shooting
-        // Notify GameManager that the player's attack is complete
-        if (gameManager != null)
-        {
-            gameManager.OnPlayerAttackComplete();
-        }
-
+        // Notify GameManager that the player's attack is complete, but with some delay
+       StartCoroutine(NotifyAttackCompleteAfterDelay());
     }
+     private IEnumerator NotifyAttackCompleteAfterDelay()
+{
+    // Wait for half second after player turn/attack is triggerd. we can also implement a coroutine style like the enemies, but keeping this here for versatilty of your choice.
+    yield return new WaitForSeconds(1f);
+
+    // Notify GameManager that the player's attack is complete
+    if (gameManager != null)
+    {
+        gameManager.OnPlayerAttackComplete();
+    }
+
+    // Reset the player's state to Idle
+    currentState = PlayerState.Idle;
+}
     private EnemyController SelectTarget()
     {
         List<EnemyController> rangedEnemies = new List<EnemyController>();

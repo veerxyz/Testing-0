@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Debug Control")]
+    [SerializeField] private bool showDebugPanel = false;
     public static GameManager ins; // since we have one gamemanager in whole game, we use it as singleton
     public PlayerController player;
     public EnemySpawner enemySpawner;
@@ -19,7 +21,7 @@ public class GameManager : MonoBehaviour
     public int maxEnemyCountPerWave_Exclusive = 4;
     public Button fightButton; //Reference to the Fight Button
     private int enemiesReachedStandby = 0;
-
+    
     public int coinCount = 0; //resets every new session, ie, no PlayerPrefs used to store long term.
 
     public enum GameState
@@ -44,6 +46,16 @@ public class GameManager : MonoBehaviour
     {
         //UI
         UIManager.ins.ShowMainPanel();
+        UIManager.ins.gameStateText.text = currentState.ToString(); //not keeping this in bool coz in update if we call midway it shouldnt throw an error.
+        if(showDebugPanel)
+        {
+        UIManager.ins.ShowDebugPanel();
+        }
+        else
+        {
+            UIManager.ins.HideDebugPanel();
+        }
+
         //fight button would come here.
         // StartGame(); //the fight button should invoke this method.
         fightButton.gameObject.SetActive(true);  // Show Fight Button at the start
@@ -65,17 +77,30 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        Debug.Log("Current State of Game is " + currentState);
+        // Debug.Log("Current State of Game is " + currentState);
+        if(showDebugPanel)
+        {
+           if (!UIManager.ins.debugPanel.activeInHierarchy)
+                {
+             UIManager.ins.debugPanel.SetActive(true);
+                }
+        UIManager.ins.gameStateText.text = currentState.ToString();
+        }
+        if(!showDebugPanel)
+        {
+            UIManager.ins.debugPanel.SetActive(false);
+        }
+
     }
     private void StartNextWave()
     {
-        Debug.Log("Starting Wave 1" + (currentWave + 1));
+       
         if (currentWave >= totalWaves)
         {
             EndGame(true); // No more waves, player wins if alive
             return;
         }
-        Debug.Log("Starting Wave 2" + (currentWave + 1));
+    
         currentWave++;
 
         // to destroy all the GameObjects(enemies) since we disabled them in Die() instead of destroying it to simplify list modifications and reads.
@@ -86,21 +111,21 @@ public class GameManager : MonoBehaviour
                 Destroy(enemy.gameObject);
             }
         }
-        Debug.Log("Starting Wave 3" + (currentWave + 1));
+    
         //clear the list of enemies of current/previous wave
         enemies.Clear();
         enemiesReachedStandby = 0;
 
 
-        Debug.Log("Starting Wave 4" + (currentWave + 1));
+        
         int enemyCount = Random.Range(minEnemyCountPerWave, maxEnemyCountPerWave_Exclusive); //spawn b/w 1-3 enemies per wave. change this to public so in editor our team can assign easily.
         enemySpawner.SpawnEnemies(enemyCount, enemies); // Use EnemySpawner
 
         //set game state to idle until enemies reach initial target z position from spawn point.
         currentState = GameState.Idle;
 
-        Debug.Log("Starting Wave 5" + (currentWave + 1));
-        Invoke(nameof(CheckEnemiesReachedTarget), waveInterval);
+        //after spawning enemies, it checks after 1 second if all are spawned
+        Invoke(nameof(CheckEnemiesReachedTarget), 1);
     }
     
     //this checks individually, and is called from enemycontroller>MoveTowardsTargetZ
@@ -180,14 +205,15 @@ public class GameManager : MonoBehaviour
         {      
             if (enemy != null && enemy.currentState != EnemyController.EnemyState.Death)
             {
-                enemy.TakeTurn(); // Move or Attack based on enemy type
-                //yield return null;
-                yield return new WaitForSeconds(1f); // Delay between enemy turns
+                Debug.Log("Enemy Turn # started");
+                yield return StartCoroutine(enemy.TakeTurn()); // wait for each enemy to finish their turn
+                Debug.Log("Enemy Turn # completed");
               
             }
           
         }
-        Debug.Log("After Loop");
+        Debug.Log("After All Enemies Turns are Completed, Adding a half second delay from Enemy Turn to Player Turn");
+        yield return new WaitForSeconds(0.5f);
         CheckGameStatus(); //after enemy turn is complete, we check if the player has lost or not, or to move to next.
     }
     #endregion
